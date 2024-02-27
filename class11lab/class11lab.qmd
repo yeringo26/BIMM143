@@ -1,0 +1,91 @@
+---
+title: "Structural Bioinformatics (pt2)"
+author: "Yerin Go A16272901"
+format: pdf
+editor: visual
+---
+
+AlphaFold has changed the game for protein structure prediction and allows anyone with bioinfo skills to predict the structure of virtually any protein 
+
+We ran via GoogleColab at: 
+https://github.com/sokrypton/ColabFold 
+
+In particular we used their AlphaFold2_mmseq2 version that uses mmseq2 rather than HMMer for sequence search. 
+
+The main outputs include a set of **PDB structure** along with matching **JSON format files** that tell us how good the resulting models might be. 
+
+Lets start by loading these structures in Mol* 
+
+```{r}
+library(bio3d)
+
+# Change this for YOUR results dir name
+results_dir <- "test_94b5b" 
+```
+
+```{r}
+# File names for all PDB models
+pdb_files <- list.files(path=results_dir,
+                        pattern="*.pdb",
+                        full.names = TRUE)
+
+# Print our PDB file names
+basename(pdb_files)
+```
+```{r}
+library(bio3d)
+
+# Read all data from Models 
+#  and superpose/fit coords
+pdbs <- pdbaln(pdb_files, fit=TRUE, exefile="msa")
+```
+```{r}
+pdbs
+```
+
+```{r}
+rd <- rmsd(pdbs, fit=T)
+```
+
+```{r}
+range(rd)
+```
+
+```{r}
+library(pheatmap)
+colnames(rd) <- paste0("m",1:5)
+rownames(rd) <- paste0("m",1:5)
+pheatmap(rd)
+```
+```{r}
+# Read a reference PDB structure
+pdb <- read.pdb("1hsg")
+```
+```{r}
+plotb3(pdbs$b[1,], typ="l", lwd=2, sse=pdb)
+points(pdbs$b[2,], typ="l", col="red")
+points(pdbs$b[3,], typ="l", col="blue")
+points(pdbs$b[4,], typ="l", col="darkgreen")
+points(pdbs$b[5,], typ="l", col="orange")
+abline(v=100, col="gray")
+```
+```{r}
+core <- core.find(pdbs)
+```
+```{r}
+core.inds <- print(core, vol=0.5)
+```
+```{r}
+xyz <- pdbfit(pdbs, core.inds, outpath="corefit_structures")
+```
+```{r}
+rf <- rmsf(xyz)
+
+plotb3(rf, sse=pdb)
+abline(v=100, col="gray", ylab="RMSF")
+```
+If the predicted model has more than one domain, each domain may have higher confidence, yet the relative positions of the domain may not. The estimated reliability of relative domain positions is in graphs of predicted aligned errors (PAE) which are included in the downloaded zip files and analyzed in R above. 
+
+
+
+
