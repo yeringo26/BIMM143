@@ -2,7 +2,7 @@
 Classwork from WI24 for [BIMM143 at UC San Diego](https://yeringo26.github.io/BIMM143/) 
 
 ## Contents 
-- Class 7: [Intro to Machine Learning for Bioinfo]()
+- Class 7: [Intro to Machine Learning for Bioinfo](https://github.com/yeringo26/BIMM143/blob/main/class07lab/class07lab.qmd)
 
 
 - Class 11: [Structural Bioinformatics]()
